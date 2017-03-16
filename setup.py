@@ -7,8 +7,6 @@ import io
 import os
 import sys
 
-import senml
-
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Remember to add requirements.txt to MANIFEST.in
@@ -22,6 +20,7 @@ except:
     # the tests and requirements-tests.txt is not included with the pip package
     tests_require = []
 
+
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
     sep = kwargs.get('sep', '\n')
@@ -31,12 +30,15 @@ def read(*filenames, **kwargs):
             buf.append(f.read())
     return sep.join(buf)
 
+
 long_description = read('README.md')
 
+
 class PyTest(TestCommand):
+
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = ['--pylint','--cov','senml','senml','tests']
+        self.test_args = ['--pylint', '--cov', 'senml', 'senml', 'tests']
         self.test_suite = True
 
     def run_tests(self):
@@ -44,9 +46,10 @@ class PyTest(TestCommand):
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
 
+
 setup(
     name='senml',
-    version=senml.__version__,
+    version='0.1.1',
     url='https://github.com/eistec/senml-python/',
     download_url='https://github.com/eistec/senml-python/archive/v0.1.0.tar.gz',
     license='Apache Software License',
@@ -60,7 +63,7 @@ setup(
     packages=['senml'],
     include_package_data=True,
     platforms='any',
-    classifiers = [
+    classifiers=[
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Development Status :: 3 - Alpha',
@@ -74,12 +77,11 @@ setup(
         'Topic :: Internet',
         'Topic :: Home Automation',
         'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
-        ],
+    ],
     keywords=[
         'senml',
         'iot',
     ],
     extras_require={
         'testing': ['pytest', 'cov', 'pylint'],
-    }
-)
+    })
