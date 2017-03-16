@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """@package senml.senml
 SenML Python object representation
 
@@ -5,12 +6,7 @@ SenML Python object representation
 """
 
 import attr
-try:
-    import cbor
-except ImportError:
-    HAVE_CBOR = False
-else:
-    HAVE_CBOR = True
+
 
 @attr.s
 class SenMLMeasurement(object):
@@ -31,11 +27,9 @@ class SenMLMeasurement(object):
             'name': (base.name or '') + (self.name or ''),
             'time': (base.time or 0.0) + (self.time or 0.0),
             'unit': self.unit or base.unit,
-            'sum':  self.sum,
+            'sum': self.sum,
         }
-        if  isinstance(self.value, bool) or \
-            isinstance(self.value, bytes) or \
-            isinstance(self.value, str):
+        if isinstance(self.value, (bool, str, unicode)):
             attrs['value'] = self.value
         elif self.value is not None:
             attrs['value'] = (base.value or 0.0) + (self.value or 0.0)
@@ -48,9 +42,9 @@ class SenMLMeasurement(object):
         """Create a base instance from the given SenML data"""
         template = cls()
         attrs = {
-            'name':  data.get('bn', template.name),
-            'time':  data.get('bt', template.time),
-            'unit':  data.get('bu', template.unit),
+            'name': data.get('bn', template.name),
+            'time': data.get('bt', template.time),
+            'unit': data.get('bu', template.unit),
             'value': data.get('bv', template.value),
         }
         return cls(**attrs)
@@ -60,24 +54,19 @@ class SenMLMeasurement(object):
         """Create an instance given JSON data as a dict"""
         template = cls()
         attrs = {
-            'name':  data.get('n', template.name),
-            'time':  data.get('t', template.time),
-            'unit':  data.get('u', template.unit),
+            'name': data.get('n', template.name),
+            'time': data.get('t', template.time),
+            'unit': data.get('u', template.unit),
             'value': data.get('v', template.value),
-            'sum':   data.get('s', template.sum),
+            'sum': data.get('s', template.sum),
         }
         if attrs['value'] is None:
             if 'vs' in data:
-                attrs['value'] = str(data['vs'])
+                attrs['value'] = unicode(data['vs'])
             elif 'vb' in data:
-                if str(data['vb']).casefold() == 'false'.casefold() or \
-                    str(data['vb']).casefold() == '0'.casefold():
-                    attrs['value'] = False
-                else:
-                    attrs['value'] = True
+                attrs['value'] = bool(data['vb'])
             elif 'vd' in data:
-                attrs['value'] = bytes(data['vd'])
-
+                attrs['value'] = str(data['vd'])
 
         return cls(**attrs)
 
@@ -85,37 +74,42 @@ class SenMLMeasurement(object):
         """Format the entry as a SenML+JSON object"""
         ret = {}
         if self.name is not None:
-            ret['n'] = str(self.name)
+            ret['n'] = unicode(self.name)
 
         if self.time is not None:
             ret['t'] = float(self.time)
 
         if self.unit is not None:
-            ret['u'] = str(self.unit)
+            ret['u'] = unicode(self.unit)
 
         if self.sum is not None:
             ret['s'] = float(self.sum)
 
         if isinstance(self.value, bool):
             ret['vb'] = self.value
-        elif isinstance(self.value, bytes):
-            ret['vd'] = self.value
         elif isinstance(self.value, str):
+            ret['vd'] = self.value
+        elif isinstance(self.value, unicode):
             ret['vs'] = self.value
         elif self.value is not None:
             ret['v'] = float(self.value)
 
         return ret
 
+
+
+
 class SenMLDocument(object):
     """A collection of SenMLMeasurement data points"""
 
     measurement_factory = SenMLMeasurement
 
-    def __init__(self, measurements=None, *args, base=None, **kwargs):
-        """Constructor
+    def __init__(self, measurements=None, base=None, *args, **kwargs):
         """
-        super().__init__(*args, **kwargs)
+        Constructor
+        """
+
+        super(SenMLDocument, self).__init__(*args, **kwargs)
         self.measurements = measurements
         self.base = base
 
@@ -142,12 +136,13 @@ class SenMLDocument(object):
         }
         if self.base:
             base = self.base
+
             if base.name is not None:
-                first['bn'] = str(base.name)
+                first['bn'] = unicode(base.name)
             if base.time is not None:
                 first['bt'] = float(base.time)
             if base.unit is not None:
-                first['bu'] = str(base.unit)
+                first['bu'] = unicode(base.unit)
             if base.value is not None:
                 first['bv'] = float(base.value)
 
@@ -157,4 +152,5 @@ class SenMLDocument(object):
             ret.extend([item.to_json() for item in self.measurements[1:]])
         else:
             ret = []
+
         return ret
