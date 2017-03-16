@@ -153,7 +153,7 @@ class SenMLDocument(object):
             if base.value is not None:
                 first['bv'] = float(base.value)
             if base.isotime is not None:
-                first['bisotime'] = unicode(base.isotime)
+                first['biso8601'] = unicode(base.isotime)
 
         if self.measurements:
             first.update(self.measurements[0].to_json())
