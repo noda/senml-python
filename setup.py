@@ -49,7 +49,7 @@ class PyTest(TestCommand):
 
 setup(
     name='senml',
-    version='0.1.1',
+    version='0.1.2',
     url='https://github.com/eistec/senml-python/',
     download_url='https://github.com/eistec/senml-python/archive/v0.1.0.tar.gz',
     license='Apache Software License',
