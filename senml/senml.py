@@ -154,3 +154,9 @@ class SenMLDocument(object):
             ret = []
 
         return ret
+
+    def to_normalized_json(self):
+        """
+        Return a JSON dict
+        """
+        return [item.to_absolute(self.base).to_json() for item in self.measurements]
