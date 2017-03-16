@@ -13,6 +13,7 @@ class SenMLMeasurement(object):
     """SenML data representation"""
     name = attr.ib(default=None)
     time = attr.ib(default=None)
+    isotime = attr.ib(default=None)
     unit = attr.ib(default=None)
     value = attr.ib(default=None)
     sum = attr.ib(default=None)
@@ -28,6 +29,7 @@ class SenMLMeasurement(object):
             'time': (base.time or 0.0) + (self.time or 0.0),
             'unit': self.unit or base.unit,
             'sum': self.sum,
+            'isotime': self.isotime or base.isotime,
         }
         if isinstance(self.value, (bool, str, unicode)):
             attrs['value'] = self.value
@@ -44,6 +46,7 @@ class SenMLMeasurement(object):
         attrs = {
             'name': data.get('bn', template.name),
             'time': data.get('bt', template.time),
+            'isotime': data.get('biso8601', template.isotime),
             'unit': data.get('bu', template.unit),
             'value': data.get('bv', template.value),
         }
@@ -56,6 +59,7 @@ class SenMLMeasurement(object):
         attrs = {
             'name': data.get('n', template.name),
             'time': data.get('t', template.time),
+            'isotime': data.get('iso8601', template.isotime),
             'unit': data.get('u', template.unit),
             'value': data.get('v', template.value),
             'sum': data.get('s', template.sum),
@@ -78,6 +82,9 @@ class SenMLMeasurement(object):
 
         if self.time is not None:
             ret['t'] = float(self.time)
+
+        if self.isotime is not None:
+            ret['iso8601'] = unicode(self.isotime)
 
         if self.unit is not None:
             ret['u'] = unicode(self.unit)
@@ -145,6 +152,8 @@ class SenMLDocument(object):
                 first['bu'] = unicode(base.unit)
             if base.value is not None:
                 first['bv'] = float(base.value)
+            if base.isotime is not None:
+                first['biso8601'] = unicode(base.isotime)
 
         if self.measurements:
             first.update(self.measurements[0].to_json())
