@@ -121,6 +121,19 @@ JS_ISOTIME = json.loads('''
 
 ]
 ''')
+JSON_ISOTIME = [{
+    "bver": 5,
+    "bn": "urn:dev:mac:0b92569229fc9e68/rpm/",
+    "biso8601": "2017-03-15T15:00:00+01:00",
+    "v": 17.666544
+}, {
+    "vs": u"α",
+    "n": "isotime1"
+}, {
+    "iso8601": "2017-03-14T00:00:00+01:00",
+    "vs": u"β",
+    "n": "isotime2"
+}]
 
 ABS_JSON_ISOTIME = [{
     "iso8601": "2017-03-15T15:00:00+01:00",
@@ -178,7 +191,16 @@ def test_senml_normalize_json():
     assert doc.to_normalized_json() == ABS_JSON
 
 
-def test_iso8601():
+def test_iso8601_to_json():
+    """
+    test SenMLDocument.to_json() with iso8601 field
+    """
+    doc = senml.SenMLDocument.from_json(JS_ISOTIME)
+    print json.dumps(doc.to_json())
+    assert doc.to_json() == JSON_ISOTIME
+
+
+def test_iso8601_normalize():
     """
     test SenMLDocument.to_normalized_json() with iso8601 field
     """
