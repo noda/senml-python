@@ -6,7 +6,7 @@ Top-level namespace for the senml module
 
 from .senml import SenMLDocument, SenMLMeasurement
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 __all__ = [
     'SenMLDocument',
